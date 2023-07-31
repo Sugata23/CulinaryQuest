@@ -1,55 +1,54 @@
-import React,{useEffect,useState} from 'react'
-import { BsSearch } from 'react-icons/bs'
-import { fetchData } from '../service'
+import React, { useEffect, useState } from "react";
+import { BsSearch } from "react-icons/bs";
+import { fetchData } from "../service";
 
-function RecipeLists() {
-    const [searchedTerm, setSearchedTerm] = useState('')
-    const [query,setQuery] = useState('pizza')
-    const [data,setData] = useState('');
+function RecipeLists(props) {
+  const [searchedTerm, setSearchedTerm] = useState("");
+  const [query, setQuery] = useState("pasta");
+  const [data, setData] = useState("");
 
-    useEffect(()=>{
-        fetchData(query).then((response)=>{
-            setData(response)
-            console.log(response)
-        })
-    },[])
+  const searchRecipe =(searchQuery)=> {
+    fetchData(searchQuery).then((response) => {
+        setData(response);
+        props.setLoader(false)
+      });
+  }
+
+  useEffect(() => {
+    fetchData(query).then((response) => {
+      setData(response);
+      props.setLoader(false);
+    });
+  }, []);
   return (
-    <div className='container'>
-        <div className='heading-line'>
-            <strong>Search Recipes</strong>
-            <div className='input-wrapper' >
-                <input type="text" placeholder='Search your recipe' />
-                <button ><BsSearch /></button>
-            </div> 
+    <div className="container">
+      <div className="heading-line">
+        <strong>Search Recipes</strong>
+        <div className="input-wrapper">
+          <input
+            onChange={(e) => setSearchedTerm(e.target.value)}
+            value={searchedTerm}
+            type="text"
+            placeholder="Search your recipe"
+          />
+          <button onClick={()=> (searchRecipe(searchedTerm),props.setLoader(true))}>
+            <BsSearch />
+          </button>
         </div>
-        <div className='flexbox'>
-            <div className='flexItem'>
-                <div className='img-wrapper'>
-                    <img src="https://images.unsplash.com/photo-1607532941433-304659e8198a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1378&q=80" alt='item.recipe.label' />
-                </div>
-                <p>Pizza Recipe</p>
+      </div>
+      <div className="flexbox">
+        {data &&
+          data.hits.map((item, index) => (
+            <div className="flexItem">
+              <div className="img-wrapper">
+                <img src={item.recipe.image} alt={item.recipe.label} />
+              </div>
+              <p>{item.recipe.label}</p>
             </div>
-            <div className='flexItem'>
-                <div className='img-wrapper'>
-                    <img src="https://images.unsplash.com/photo-1607532941433-304659e8198a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1378&q=80" alt='item.recipe.label' />
-                </div>
-                <p>Pizza Recipe</p>
-            </div>
-            <div className='flexItem'>
-                <div className='img-wrapper'>
-                    <img src="https://images.unsplash.com/photo-1607532941433-304659e8198a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1378&q=80" alt='item.recipe.label' />
-                </div>
-                <p>Pizza Recipe</p>
-            </div>
-            <div className='flexItem'>
-                <div className='img-wrapper'>
-                    <img src="https://images.unsplash.com/photo-1607532941433-304659e8198a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1378&q=80" alt='item.recipe.label' />
-                </div>
-                <p>Pizza Recipe</p>
-            </div>
-        </div>
+          ))}
+      </div>
     </div>
-  )
+  );
 }
 
-export default RecipeLists
+export default RecipeLists;
